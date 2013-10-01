@@ -21,14 +21,16 @@ import android.widget.TextView;
 
 public class main extends Activity {
 
-	 TextView t = (TextView) findViewById(R.id.text1);
+	 TextView t;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String uri = "http://172.16.0.80/app-android/app.php";
-        new httpcarga().execute(uri);
+        t  = (TextView) findViewById(R.id.text1);
+        //String uri = "http://172.16.0.80/app-android/app.php";
+        new httpcarga().execute("http://172.16.0.80/app-android/app.php");
+        
     }
 
 
@@ -39,7 +41,8 @@ public class main extends Activity {
         return true;
     }
     
-    private static String convertStreamToString(InputStream is) {
+    @SuppressWarnings("finally")
+	private static String convertStreamToString(InputStream is) {
     	/*
     	* To convert the InputStream to String we use the
     	* BufferedReader.readLine() method. We iterate until the BufferedReader
@@ -59,7 +62,7 @@ public class main extends Activity {
 	    	} finally {
 		    	try {
 		    		is.close();
-		    	} catch (IOException e) {
+		    	} catch (final IOException e) {
 		    		e.printStackTrace();
 		    	}
 		    	return sb.toString();
@@ -71,23 +74,20 @@ public class main extends Activity {
     	 HttpPost post = new HttpPost(url);
     	 String result = "";
     	 try {
-    	 HttpResponse response = client.execute(post);
-    	 StatusLine statusLine = response.getStatusLine();
-    	 
-    	 if (statusLine.getStatusCode() == 200) {
-    	   HttpEntity entity = response.getEntity();
-    	   InputStream instream = entity.getContent();
-    	   result = convertStreamToString(instream);
-    	   instream.close();
-    	 } 
-    	 
-    	 
+	    	 HttpResponse response = client.execute(post);
+	    	 StatusLine statusLine = response.getStatusLine();
+	    	 System.err.println(statusLine.getStatusCode());
+	    	 if (statusLine.getStatusCode() == 200) {
+	    	   HttpEntity entity = response.getEntity();
+	    	   InputStream instream = entity.getContent();
+	    	   result = convertStreamToString(instream);
+	    	   instream.close();
+	    	 } 
+	    	 return result;
     	 } catch (Exception e) {
-    	   result = "ERROR";
+    	   result = "ERROR "+e.getMessage();
     	 }
 		return result;
-
-
     }
     
     class httpcarga extends AsyncTask<String,String,String>{
