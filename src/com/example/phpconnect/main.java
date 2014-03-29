@@ -92,6 +92,7 @@ public class main extends Activity {
     
     class httpcarga extends AsyncTask<String,String,String>{
     	protected void onPreExecute(){
+    		// message pre load
     		t.setText("Cargando Http");
     	}
     	
